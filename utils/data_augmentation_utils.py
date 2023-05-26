@@ -1,3 +1,8 @@
+#
+# This source code is inspired from Pytorch Lightning SimCLR implementation :
+#   https://lightning.ai/docs/pytorch/stable/notebooks/course_UvA-DL/13-contrastive-learning.html
+#
+
 import cv2
 import numpy as np
 
