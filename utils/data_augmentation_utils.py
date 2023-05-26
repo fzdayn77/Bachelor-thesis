@@ -16,7 +16,7 @@ from typing import Optional
 
 class GaussianBlur(object):
     """
-    Implements Gaussian blur as described in the SimCLR paper (ArXiv, https://arxiv.org/abs/2002.05709).
+    Blurs the given image with separable convolution as described in the SimCLR paper(ArXiv, https://arxiv.org/abs/2002.05709).
     """
 
     def __init__(self, kernel_size, p=0.5, min=0.1, max=2.0):
@@ -103,6 +103,7 @@ class simCLR_eval_data_augmentation(object):
     def __init__(
         self,
         input_height: int = 224,
+        crop: bool = False,
         normalize: Optional[transforms.Normalize] = None
     ):
         self.input_height = input_height
@@ -112,6 +113,9 @@ class simCLR_eval_data_augmentation(object):
             transforms.Resize(self.input_height),
             transforms.ToTensor()
         ]
+
+        if crop:
+            data_transforms.append(transforms.RandomResizedCrop(size=self.input_height))
 
         if self.normalize:
             data_transforms.append(normalize)
