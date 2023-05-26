@@ -116,6 +116,8 @@ class simCLR_eval_data_augmentation(object):
 
         if crop:
             data_transforms.append(transforms.RandomResizedCrop(size=self.input_height))
+        
+        data_transforms.append(transforms.ToTensor())
 
         if self.normalize:
             data_transforms.append(normalize)
