@@ -2,3 +2,4 @@ from models import forward_forward
 from models import resnet
 from models import resnet_from_scratch
 from models import projection_head
+from models import encoder
