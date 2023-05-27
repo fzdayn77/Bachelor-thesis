@@ -12,7 +12,8 @@ from typing import Optional
 
 class GaussianBlur(object):
     """
-    Blurs the given image with separable convolution as described in the SimCLR paper(ArXiv, https://arxiv.org/abs/2002.05709).
+    Blurs the given image with separable convolution as described in the SimCLR paper
+    (ArXiv, https://arxiv.org/abs/2002.05709).
     """
 
     def __init__(self, kernel_size, p=0.5, min=0.1, max=2.0):
@@ -45,9 +46,9 @@ class simCLR_training_data_augmentation():
 
     def __init__(
         self,
-        size: int = 224,
+        size: int = 32,
         gaussian_blur: bool = False,
-        jitter_strength = 1,
+        jitter_strength: float = 1.,
         normalize: Optional[transforms.Normalize] = None
     ):
 
@@ -64,6 +65,8 @@ class simCLR_training_data_augmentation():
         )
 
         data_transforms = [
+            transforms.ToPILImage(),
+            transforms.Resize(self.size),
             transforms.RandomResizedCrop(size=self.size),
             transforms.RandomHorizontalFlip(p=0.5),
             transforms.RandomApply([self.color_jitter], p=0.8),
@@ -74,11 +77,10 @@ class simCLR_training_data_augmentation():
         if self.gaussian_blur:
             data_transforms.append(GaussianBlur(kernel_size=int(0.1 * self.size), p=0.5))
 
-        # Adding Normalization
-        if self.normalize:
-            data_transforms.append(self.normalize)
-
         data_transforms.append(transforms.ToTensor())
+
+        # Adding Normalization
+        data_transforms.append(self.normalize)
 
         # Transformations on the training data
         self.train_transform = transforms.Compose(data_transforms)
@@ -98,7 +100,7 @@ class simCLR_eval_data_augmentation():
 
     def __init__(
         self,
-        size: int = 224,
+        size: int = 32,
         crop: bool = False,
         normalize: Optional[transforms.Normalize] = None
     ):
@@ -107,19 +109,18 @@ class simCLR_eval_data_augmentation():
         self.normalize = normalize
 
         data_transforms = [
-            transforms.Resize(self.size),
-            transforms.ToTensor()
+            transforms.ToPILImage(),
+            transforms.Resize(self.size)
         ]
 
         # Adding Crop
         if self.crop:
             data_transforms.append(transforms.RandomResizedCrop(size=self.size))
         
-        # Adding Normalization
-        if self.normalize:
-            data_transforms.append(normalize)
-
         data_transforms.append(transforms.ToTensor())
+
+        # Adding Normalization
+        data_transforms.append(self.normalize)
 
         # Transformations on the testing data
         self.test_transform = transforms.Compose(data_transforms)
