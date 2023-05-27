@@ -1,5 +1,5 @@
-from models import forward_forward
-from models import resnet
-from models import resnet_from_scratch
-from models import projection_head
-from models import encoder
+from .resnet import get_resnet
+from .resnet_from_scratch import ResBlock, ResBottleneckBlock, ResNet
+from .forward_forward import Forward_Forward
+from .encoder import get_encoder
+from .projection_head import Projection_Head
