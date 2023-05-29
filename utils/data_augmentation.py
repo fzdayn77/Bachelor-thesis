@@ -5,10 +5,8 @@
 
 import cv2
 import numpy as np
-
-import torchvision.transforms as transforms
-from typing import Optional
-
+import torchvision
+from torchvision.transforms import transforms
 
 class GaussianBlur(object):
     """
@@ -49,9 +47,8 @@ class simCLR_training_data_augmentation():
         size: int = 32,
         gaussian_blur: bool = False,
         jitter_strength: float = 1.,
-        normalize: Optional[transforms.Normalize] = None
+        normalize = transforms.Normalize(mean=(0,), std=(1,)) # Default Normalization
     ):
-
         self.jitter_strength = jitter_strength
         self.size = size
         self.gaussian_blur = gaussian_blur
@@ -65,7 +62,6 @@ class simCLR_training_data_augmentation():
         )
 
         data_transforms = [
-            transforms.ToPILImage(),
             transforms.Resize(self.size),
             transforms.RandomResizedCrop(size=self.size),
             transforms.RandomHorizontalFlip(p=0.5),
@@ -102,15 +98,15 @@ class simCLR_eval_data_augmentation():
         self,
         size: int = 32,
         crop: bool = False,
-        normalize: Optional[transforms.Normalize] = None
+        normalize = transforms.Normalize(mean=(0,), std=(1,)) # Default Normalization
     ):
         self.size = size
         self.crop = crop
         self.normalize = normalize
 
         data_transforms = [
-            transforms.ToPILImage(),
-            transforms.Resize(self.size)
+            transforms.Resize(self.size),
+            transforms.RandomHorizontalFlip(p=0.5)
         ]
 
         # Adding Crop
