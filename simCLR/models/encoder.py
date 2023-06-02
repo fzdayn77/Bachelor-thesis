@@ -7,11 +7,15 @@ def get_encoder(name):
 
     if name not in encoders:
         raise KeyError(f"{name} is not a valid encoder name")
-    
+        
     # ResNet18/34/50
     if name == "resnet18" or name == "resnet34" or name == "resnet50":
-        return get_resnet(name=name, pretrained=False)
+        encoder = get_resnet(name=name)
     
     # Forward-Forward
     if name == "forward-forward":
-        return Forward_Forward()
+        encoder = Forward_Forward()
+
+    print(f'Encoder ====> {name}')
+
+    #return encoder 
