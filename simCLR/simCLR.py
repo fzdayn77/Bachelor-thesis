@@ -1,6 +1,4 @@
 import torch.nn as nn
-from models.resnet import get_resnet
-from models.encoder import get_encoder
 from models.projection_head import Projection_Head
 
 class SimCLR(nn.Module):
@@ -8,7 +6,7 @@ class SimCLR(nn.Module):
     Implementation of the simCLR model
     """
     
-    def __init__(self, encoder, projection_dim, n_features):
+    def __init__(self, encoder, n_features, projection_dim):
         super(SimCLR, self).__init__()
         
         self.n_features = n_features
@@ -18,7 +16,7 @@ class SimCLR(nn.Module):
         self.encoder = encoder
 
         # projector is a simple MLP with ReLU as activation function
-        self.projector = Projection_Head().forward
+        self.projector = Projection_Head(input_dim=n_features, hidden_dim=n_features, output_dim=projection_dim).forward
 
     def forward(self, x_i, x_j):
         # x -> h -> z
