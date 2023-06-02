@@ -14,7 +14,7 @@ class SimCLR(nn.Module):
         self.n_features = n_features
         self.projection_dim = projection_dim
 
-        # encoder either a ResNet or a Forward-Forward Network
+        # encoder is either a ResNet or a Forward-Forward Network
         self.encoder = encoder
 
         # projector is a simple MLP with ReLU as activation function
