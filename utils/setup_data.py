@@ -38,7 +38,7 @@ def get_datasets(dataset_name, path, batch_size=128):
                                    transform=simCLR_eval_data_augmentation(crop=True))
 
     else:
-        return "Choose a datset name ( cifar10 or cifar100 or imagNet )"
+        return "Choose a datset name ( cifar10 or cifar100 or imageNet )"
 
     # Trainloaderand Testloader
     train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True)

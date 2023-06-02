@@ -25,10 +25,10 @@ class GaussianBlur(object):
     def __call__(self, sample):
         sample = np.array(sample)
 
-        # blur the image with a 50% chance
+        # blur the image with a probability=0.5
         prob = np.random.random_sample()
 
-        # less than 50%
+        # probability < 0.5
         if prob < self.p:
             sigma = (self.max - self.min) * np.random.random_sample() + self.min
             sample = cv2.GaussianBlur(sample, (self.kernel_size, self.kernel_size), sigma)
