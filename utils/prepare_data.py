@@ -6,7 +6,7 @@ from torchvision.transforms import transforms
 
 def get_datasets(dataset_name, path, batch_size=128):
     """
-    Imports traiset and testset of the chosen Dataset and returns the corresponding trainloader and testloader
+    Imports trainset and testset of the chosen Dataset and returns the corresponding trainloader and testloader
     """
 
     # Trainset and Testset

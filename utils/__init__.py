@@ -1,3 +1,3 @@
 from .nt_xnet_loss import nt_xnet_loss
-from .setup_data import get_datasets
+from .prepare_data import get_datasets
 from .data_augmentation import GaussianBlur, simCLR_training_data_augmentation, simCLR_eval_data_augmentation
