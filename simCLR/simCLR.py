@@ -16,7 +16,8 @@ class SimCLR(nn.Module):
         self.encoder = encoder
 
         # projector is a simple MLP with ReLU as activation function
-        self.projector = Projection_Head(input_dim=n_features, hidden_dim=n_features, output_dim=projection_dim).forward
+        self.projector = Projection_Head(input_dim=self.n_features, hidden_dim=self.n_features,
+                                          output_dim=self.projection_dim).forward
 
     def forward(self, x_i, x_j):
         # x -> h -> z
@@ -25,5 +26,5 @@ class SimCLR(nn.Module):
 
         z_i = self.projector(h_i)
         z_j = self.projector(h_j)
-        
+
         return h_i, h_j, z_i, z_j
