@@ -5,8 +5,8 @@
 
 import cv2
 import numpy as np
-import torchvision
-from torchvision.transforms import transforms
+import torch
+from torchvision.transforms import transforms, Lambda
 
 class GaussianBlur(object):
     """
@@ -78,6 +78,9 @@ class simCLR_training_data_augmentation():
         # Adding Normalization
         data_transforms.append(self.normalize)
 
+        # Flattening
+        data_transforms.append(Lambda(lambda x: torch.flatten(x)))
+
         # Transformations on the training data
         self.train_transform = transforms.Compose(data_transforms)
 
@@ -117,6 +120,9 @@ class simCLR_eval_data_augmentation():
 
         # Adding Normalization
         data_transforms.append(self.normalize)
+
+        # Flattening
+        data_transforms.append(Lambda(lambda x: torch.flatten(x)))
 
         # Transformations on the testing data
         self.test_transform = transforms.Compose(data_transforms)
