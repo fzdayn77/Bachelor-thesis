@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import DataLoader
 
+
 def separate_pos_pairs(dataloader : DataLoader, batch_size : int):
   '''
   Creates a list of positive data pairs. Positive pairs are two augmented images of the same image.
@@ -39,6 +40,35 @@ def separate_pos_pairs(dataloader : DataLoader, batch_size : int):
     output_list.append(pair)
 
   return output_list
+
+
+def get_pos_neg(pairs_list, idx : int):
+  '''
+  Separates positive data from negative data.
+
+  Parameters:
+    pairs_list (List of Tensors): contains pairs of Tensors.
+    idx (int): index of the positive pair that will nbe separated
+               from the rest.
+
+  Returns:
+    pos_data (List of Tensors): list of positive data.
+    neg_data (List of Tensors): list of negative data.
+  '''
+  
+  # List of two positive Tensors
+  pos_data = pairs_list[idx]
+
+  # Negative Data
+  neg_data = []
+  for i in range(len(pairs_list)):
+    # Ignore pos_data
+    if i == idx:
+      continue
+    neg_data.append(pairs_list[i][0])
+    neg_data.append(pairs_list[i][1])
+
+  return pos_data, neg_data
 
 
 def goodness_score(pos_acts, neg_acts, threshold=2.0):
