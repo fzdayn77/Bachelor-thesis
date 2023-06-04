@@ -1,3 +1,3 @@
 from .nt_xnet_loss import nt_xnet_loss
 from .prepare_data import get_dataloaders, separate_pos_pairs, get_pos_neg_data
-from .data_augmentation import GaussianBlur, simCLR_training_data_augmentation, simCLR_eval_data_augmentation
+from .data_augmentation import GaussianBlur, train_data_augmentation, test_data_augmentation

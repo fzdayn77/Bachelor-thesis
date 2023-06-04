@@ -36,7 +36,7 @@ class GaussianBlur(object):
         return sample
 
 
-class simCLR_training_data_augmentation():
+class train_data_augmentation():
     """
     Implementation of the data augmentations on the trainig data
     as proposed in the SimCLR official paper
@@ -91,7 +91,7 @@ class simCLR_training_data_augmentation():
         return z_i, z_j
 
 
-class simCLR_eval_data_augmentation():
+class test_data_augmentation():
     """
     Implementation of the data augmentations on the testing data
     as proposed in the SimCLR official paper
