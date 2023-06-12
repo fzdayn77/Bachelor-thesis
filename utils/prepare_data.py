@@ -13,39 +13,39 @@ def get_dataloaders(dataset_name, path, batch_size=128):
     # Trainset and Testset
     if dataset_name == "cifar10":
         path="/data/CIFAR-10-augmented"
-        trainset = datasets.CIFAR10(root=path, train=True, download=True, 
+        train_set = datasets.CIFAR10(root=path, train=True, download=True, 
                                     transform=train_data_augmentation(normalize=transforms.Normalize(
                                         mean=(0.4914, 0.4822, 0.4465), std=(0.2470, 0.2435, 0.2616))))
 
-        testset = datasets.CIFAR10(root=path, train=False, download=True, 
+        test_set = datasets.CIFAR10(root=path, train=False, download=True, 
                                    transform=test_data_augmentation(crop=True))
 
     elif dataset_name == "cifar100":
         path="/data/CIFAR-100-augmented"
-        trainset = datasets.CIFAR100(root=path, train=True, download=True, 
+        train_set = datasets.CIFAR100(root=path, train=True, download=True, 
                                     transform=train_data_augmentation(normalize=transforms.Normalize(
                                         mean=(0.4914, 0.4822, 0.4465), std=(0.2470, 0.2435, 0.2616))))
 
-        testset = datasets.CIFAR100(root=path, train=False, download=True, 
+        test_set = datasets.CIFAR100(root=path, train=False, download=True, 
                                    transform=test_data_augmentation(crop=True))
 
     elif dataset_name == "imageNet":
         path="/data/ImageNet-augmented"
-        trainset = datasets.ImageNet(root=path, train=True, download=True, 
+        train_set = datasets.ImageNet(root=path, train=True, download=True, 
                                     transform=train_data_augmentation(normalize=transforms.Normalize(
                                         mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))))
 
-        testset = datasets.ImageNet(root=path, train=False, download=True, 
+        test_set = datasets.ImageNet(root=path, train=False, download=True, 
                                    transform=test_data_augmentation(crop=True))
 
     else:
-        return "Choose a datset name ( cifar10 or cifar100 or imageNet )"
+        raise KeyError(f"Choose a datset name (cifar10 or cifar100 or imageNet)")
 
     # Trainloaderand Testloader
-    train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True)
-    test_loader = DataLoader(testset, batch_size=batch_size, shuffle=False)
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False)
 
-    return train_loader, test_loader
+    return train_set, train_loader, test_set, test_loader
 
 
 def separate_pos_pairs(dataloader : DataLoader, batch_size : int):
@@ -115,24 +115,3 @@ def get_pos_neg_data(pairs_list, idx : int):
     neg_data.append(pairs_list[i][1])
 
   return pos_data, neg_data
-
-
-def goodness_score(pos_acts, neg_acts, threshold=2.0):
-    """
-    Computes the goodness score for a given set of positive and negative activations.
-
-    Parameters:
-      pos_acts (torch.Tensor): Numpy array of positive activations.
-      neg_acts (torch.Tensor): Numpy array of negative activations.
-      threshold (float, optional): Threshold value used to compute the score. Default is 2.0 .
-
-    Returns:
-      goodness (torch.Tensor): Goodness score computed as the sum of positive and negative goodness values. Note that this
-      score is actually the quantity that is optimized and not the goodness itself. The goodness itself is the same
-      quantity but without the threshold subtraction.
-    """
-
-    pos_goodness = -torch.sum(torch.pow(pos_acts, 2)) + threshold
-    neg_goodness = torch.sum(torch.pow(neg_acts, 2)) - threshold
-    
-    return torch.add(pos_goodness, neg_goodness)
