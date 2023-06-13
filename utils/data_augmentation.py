@@ -47,7 +47,7 @@ class train_data_augmentation():
         size: int = 32,
         gaussian_blur: bool = False,
         jitter_strength: float = 1.,
-        normalize = transforms.Normalize(mean=(0,), std=(1,)) # Default Normalization
+        normalize = transforms.Normalize(mean=(0, 0, 0), std=(1, 1, 1)) # Does nothing !!
     ):
         self.jitter_strength = jitter_strength
         self.size = size
@@ -101,7 +101,7 @@ class test_data_augmentation():
         self,
         size: int = 32,
         crop: bool = False,
-        normalize = transforms.Normalize(mean=(0,), std=(1,)) # Default Normalization
+        normalize = transforms.Normalize(mean=(0, 0, 0), std=(1, 1, 1)) # Does nothing !!
     ):
         self.size = size
         self.crop = crop
