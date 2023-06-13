@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import transforms
 
 
-def get_dataloaders(dataset_name, path, batch_size=128):
+def get_data(dataset_name, path, batch_size=128):
     """
     Imports trainset and testset of the chosen Dataset and returns the corresponding trainloader and testloader.
     """
