@@ -5,12 +5,12 @@ from utils.utils import goodness_score, get_metrics
 from tqdm.auto import tqdm
 from utils.prepare_data import get_pos_neg_data, separate_pos_pairs
 
-# Hyperparameters for now !!!
+# Hyperparameters just for now !!!
 batch_size = 512
 augmented_batch_size = batch_size*2
 num_epochs = 100
 lr = 0.03
-input_size = 32*32*3 # Height=Width=32 and channels=3
+input_size = 32*32
 output_size = 10
 
 device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")

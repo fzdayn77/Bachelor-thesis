@@ -12,7 +12,7 @@ def get_data(dataset_name, path, batch_size=128):
 
     # Trainset and Testset
     if dataset_name == "cifar10":
-        path="/data/CIFAR-10-augmented"
+        path="./data/CIFAR-10-augmented"
         train_set = datasets.CIFAR10(root=path, train=True, download=True, 
                                     transform=train_data_augmentation(normalize=transforms.Normalize(
                                         mean=(0.4914, 0.4822, 0.4465), std=(0.2470, 0.2435, 0.2616))))
@@ -21,7 +21,7 @@ def get_data(dataset_name, path, batch_size=128):
                                    transform=test_data_augmentation(crop=True))
 
     elif dataset_name == "cifar100":
-        path="/data/CIFAR-100-augmented"
+        path="./data/CIFAR-100-augmented"
         train_set = datasets.CIFAR100(root=path, train=True, download=True, 
                                     transform=train_data_augmentation(normalize=transforms.Normalize(
                                         mean=(0.4914, 0.4822, 0.4465), std=(0.2470, 0.2435, 0.2616))))
@@ -30,7 +30,7 @@ def get_data(dataset_name, path, batch_size=128):
                                    transform=test_data_augmentation(crop=True))
 
     elif dataset_name == "imageNet":
-        path="/data/ImageNet-augmented"
+        path="./data/ImageNet-augmented"
         train_set = datasets.ImageNet(root=path, train=True, download=True, 
                                     transform=train_data_augmentation(normalize=transforms.Normalize(
                                         mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))))
