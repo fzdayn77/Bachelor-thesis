@@ -12,7 +12,7 @@ def nt_xnet_loss(z_1, z_2, temperature):
     num_samples = len(output)
 
     # Full similarity matrix
-    sim = torch.exp(torch.mm(output, output.t().contiguous()) / temperature)
+    sim = torch.exp(torch.matmul(output, output.t().contiguous()) / temperature)
 
     # Negative similarity
     mask = ~torch.eye(num_samples, device=sim.device).bool()
@@ -20,7 +20,7 @@ def nt_xnet_loss(z_1, z_2, temperature):
 
     # Positive similarity
     pos = torch.exp(torch.sum(z_1 * z_2, dim=-1) / temperature)
-    pos = torch.cat([pos, pos], dim=0)
+    #pos = torch.cat([pos, pos], dim=0)
 
     # Claculating the loss
     loss = -torch.log(pos / neg).mean()
