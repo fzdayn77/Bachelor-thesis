@@ -111,15 +111,16 @@ def train_model(model: nn.Module, num_epochs: int, train_loader: DataLoader, dev
     stacked_mini_batch = []
     for idx, (mini_batch, _) in enumerate(inner_tqdm):
       stacked_mini_batch = torch.stack([img for idx in range(len(mini_batch)) for img in train_loader.dataset[idx][0]], dim=0)
-      stacked_mini_batch = stacked_mini_batch.to(device)
+      if device is not None:
+        stacked_mini_batch = stacked_mini_batch.to(device)
 
-      matrices = model(stacked_mini_batch)
-      print("matrices are calculated !!")
-
+      loss_list = model(stacked_mini_batch)
+      print(loss_list)
   
   # Total time
   elapsed = (time.time() - start_time) / 60
   print(f'Total Training Time: {elapsed:.2f} min')
+
   print("Training Done!\n")
 
   return minibatch_loss_list, train_acc_list

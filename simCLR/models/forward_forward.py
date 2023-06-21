@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import numpy as np
 from utils.nt_xnet_loss import nt_xnet_loss
 from utils.utils import generate_sub_batches
 
@@ -21,21 +22,18 @@ class FF_Layer(nn.Linear):
 
   def train_layer(self, x_1, x_2):
     loss_matrix = []
-
     for _, t_1 in enumerate(x_1):
+      loss_list = []
       if self.device is not None:
         t_1 = t_1.to(self.device)
-      #print(t_1)
       
-      loss_list = []
-
       for _, t_2 in enumerate(x_2):
         if self.device is not None:
           t_2 = t_2.to(self.device)
-        #print(t_2)
         
-        loss = nt_xnet_loss(t_1, t_2, temperature=self.temperature)
-        loss_list.append(self.relu(loss))
+        loss_t1_t2 = nt_xnet_loss(t_1, t_2, temperature=self.temperature)
+        loss_ = self.relu(loss_t1_t2)
+        loss_list.append(loss_.item())
 
       loss_matrix.append(loss_list)
 
@@ -44,8 +42,16 @@ class FF_Layer(nn.Linear):
   def forward(self, x_1, x_2):
     self.opt.zero_grad()
     loss_matrix = self.train_layer(x_1, x_2)
-    loss_matrix[0][0].backward()
+
+    # Calculating the average loss from the loss matrix
+    loss = np.asarray([np.asarray(array).mean() for array in loss_matrix]).mean()
+    loss = torch.from_numpy(loss)
+    print(loss)
+
+    loss.backward()
     self.opt.step()
+
+    return loss
 
     return loss_matrix
   
@@ -99,9 +105,9 @@ class FF_Net(nn.Module):
     sub_1, sub_2 = generate_sub_batches(x)
 
     # Pass the flattened features through the FF layers
-    net_loss_matrices = []
+    net_loss = []
     for layer in self.ff_layers:
-        loss_matrix = layer(sub_1, sub_2)
-        net_loss_matrices.append(loss_matrix)
+        loss = layer(sub_1, sub_2)
+        net_loss.append(loss)
 
-    return net_loss_matrices
+    return net_loss
