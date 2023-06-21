@@ -1,5 +1,8 @@
 import torch
+import torch.nn as nn
 from torch.utils.data import DataLoader
+import time
+from tqdm.auto import tqdm
 
 
 def separate_pos_pairs(dataloader : DataLoader, batch_size : int):
@@ -93,4 +96,31 @@ def generate_sub_batches(list):
     sub_2.append(list[idx+1])
 
   return sub_1, sub_2
+
+
+def train_model(model: nn.Module, num_epochs: int, train_loader: DataLoader, device=None):
+  
+  start_time = time.time()
+  minibatch_loss_list, train_acc_list = [], []
+  print("Begin training ...")
+
+  for epoch in range(num_epochs):
+    model.train()
+    inner_tqdm = tqdm(train_loader, desc=f"Training FF Layers | Epoch {epoch+1}/{num_epochs}", leave=True, position=0)
+
+    stacked_mini_batch = []
+    for mini_batch in inner_tqdm:
+      stacked_mini_batch = torch.stack([img for idx in range(len(mini_batch)) for img in train_loader.dataset[idx][0]], dim=0)
+      stacked_mini_batch = stacked_mini_batch.to(device)
+
+      matrices = model(stacked_mini_batch)
+      print("matrices are calculated !!")
+
+  
+  # Total time
+  elapsed = (time.time() - start_time) / 60
+  print(f'Total Training Time: {elapsed:.2f} min')
+  print("Training Done!\n")
+
+  return minibatch_loss_list, train_acc_list
 
