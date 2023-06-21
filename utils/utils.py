@@ -109,7 +109,7 @@ def train_model(model: nn.Module, num_epochs: int, train_loader: DataLoader, dev
     inner_tqdm = tqdm(train_loader, desc=f"Training FF Layers | Epoch {epoch+1}/{num_epochs}", leave=True, position=0)
 
     stacked_mini_batch = []
-    for mini_batch in inner_tqdm:
+    for idx, (mini_batch, _) in enumerate(inner_tqdm):
       stacked_mini_batch = torch.stack([img for idx in range(len(mini_batch)) for img in train_loader.dataset[idx][0]], dim=0)
       stacked_mini_batch = stacked_mini_batch.to(device)
 
