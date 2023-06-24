@@ -1,8 +1,7 @@
 import torch
 import torch.nn as nn
 import numpy as np
-from utils.nt_xnet_loss import nt_xnet_loss
-from utils.utils import generate_sub_batches
+from utils.nt_xent_loss import nt_xent_loss
 
 
 class FF_Layer(nn.Linear):
@@ -16,61 +15,32 @@ class FF_Layer(nn.Linear):
 
     if optimizer is None:
       # Default optimizer
-      self.opt = torch.optim.Adam(self.parameters(), lr=0.01)
+      self.opt = torch.optim.Adam(self.parameters(), lr=0.1)
     else:
       self.opt = optimizer
 
-  def train_layer(self, x_1, x_2):
-    loss_matrix = []
-    for _, t_1 in enumerate(x_1):
-      loss_list = []
-      if self.device is not None:
-        t_1 = t_1.to(self.device)
-      
-      for _, t_2 in enumerate(x_2):
-        if self.device is not None:
-          t_2 = t_2.to(self.device)
-        
-        loss_t1_t2 = nt_xnet_loss(t_1, t_2, temperature=self.temperature)
-        loss_ = self.relu(loss_t1_t2)
-        loss_list.append(loss_.item())
-
-      loss_matrix.append(loss_list)
-
-    return loss_matrix
-
   def forward(self, x_1, x_2):
     self.opt.zero_grad()
-    loss_matrix = self.train_layer(x_1, x_2)
+    loss = nt_xent_loss(x_1, x_2, temperature=self.temperature)
 
-    # Calculating the average loss from the loss matrix
-    loss = np.asarray([np.asarray(array).mean() for array in loss_matrix]).mean()
-    loss = torch.from_numpy(loss)
-    print(loss)
-
-    loss.backward()
+    # TODO : retain_graph must be Fakse !!
+    loss.backward(retain_graph=True)
     self.opt.step()
 
     return loss
 
-    return loss_matrix
-  
 
 class FF_Net(nn.Module):
-  def __init__(self, num_layers: int, lr: float, device=None):
+  def __init__(self, num_layers: int, lr: float, temperature: float, device=None):
     super(FF_Net, self).__init__()
     self.num_layers = num_layers
     self.device = device
     self.lr = lr
-    self.temperature = 2.0
+    self.temperature = temperature
 
     # Features Extraction
     self.features = torch.nn.Sequential(
-        torch.nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, stride=2, padding=1),
-        torch.nn.ReLU(inplace=True),
-        torch.nn.MaxPool2d(kernel_size=3, stride=1),
-
-        torch.nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, stride=2, padding=1),
+        torch.nn.Conv2d(in_channels=3, out_channels=64, kernel_size=3, stride=2, padding=1),
         torch.nn.ReLU(inplace=True),
         torch.nn.MaxPool2d(kernel_size=3, stride=1),
 
@@ -78,17 +48,17 @@ class FF_Net(nn.Module):
         torch.nn.ReLU(inplace=True),
         torch.nn.MaxPool2d(kernel_size=3, stride=1),
 
-        torch.nn.Conv2d(in_channels=128, out_channels=256, kernel_size=3, stride=1, padding=1),
+        torch.nn.Conv2d(in_channels=128, out_channels=192, kernel_size=3, stride=1, padding=1),
         torch.nn.ReLU(inplace=True),
         torch.nn.MaxPool2d(kernel_size=3, stride=1)
     )
 
     # Average Pooling
-    self.avgpool = torch.nn.AdaptiveAvgPool2d((2, 2))
+    self.avgpool = torch.nn.AdaptiveAvgPool2d((4, 4))
 
     # Forward-Forward Layers
     ff_layers = [
-        FF_Layer(in_features=256*2*2 if idx == 0 else 2000,
+        FF_Layer(in_features=192*4*4 if idx == 0 else 2000,
                  out_features=2000,
                  temperature=self.temperature,
                  device=self.device) for idx in range(self.num_layers)
@@ -96,18 +66,26 @@ class FF_Net(nn.Module):
     self.ff_layers = ff_layers
 
   def forward(self, x):
+    x_1, x_2 = x[0], x[1]
+
     if self.device is not None:
-      x = x.to(self.device)
-    
-    x = self.features(x)
-    x = self.avgpool(x)
-    x = torch.flatten(x, start_dim=1)
-    sub_1, sub_2 = generate_sub_batches(x)
+      x_1 = x_1.to(self.device)
+      x_2 = x_2.to(self.device)
+
+    # x_1 and x_2 shapes ==> torch.Size([128, 3072])
+    # 3072 = 32*32*3
+    x_1 = self.features(x_1)
+    x_1 = self.avgpool(x_1)
+    x_1 = torch.flatten(x_1, start_dim=1)
+
+    x_2 = self.features(x_2)
+    x_2 = self.avgpool(x_2)
+    x_2 = torch.flatten(x_2, start_dim=1)
 
     # Pass the flattened features through the FF layers
-    net_loss = []
+    net_losses = []
     for layer in self.ff_layers:
-        loss = layer(sub_1, sub_2)
-        net_loss.append(loss)
+        layer_loss = layer(x_1, x_2)
+        net_losses.append(layer_loss.item())
 
-    return net_loss
+    return np.asarray(net_losses).mean()
