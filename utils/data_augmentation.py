@@ -5,8 +5,7 @@
 
 import cv2
 import numpy as np
-import torch
-from torchvision.transforms import transforms, Lambda
+from torchvision.transforms import transforms
 
 class GaussianBlur(object):
     """
