@@ -1,14 +1,15 @@
 from .resnet import get_resnet
 from .forward_forward import FF_Net
 
-def get_encoder(model_name: str):
+def get_encoder(model_name: str, num_layers: int, lr: float, temperature: float, device=None):
     '''
     Chooses an encoder from the given models.
 
     Parameters:
         name (String): name of the model. It can be one of four possible
                        models [ResNet18. ResNet34, ResNet50, Forward-Forward].
-                       Default name: "forward-forward"
+        device: Default is None.
+
     Returns:
         encoder (nn.Module): the chosen model.
     '''
@@ -22,8 +23,8 @@ def get_encoder(model_name: str):
     if model_name == "resnet18" or model_name == "resnet34" or model_name == "resnet50":
         encoder = get_resnet(name=model_name)
     else:
-        encoder = FF_Net
+        encoder = FF_Net(num_layers, lr, temperature, device=device)
     
-    print(f'Encoder ====> {model_name}')
+    print(f'Encoder ===> {model_name}')
 
     return encoder
