@@ -47,7 +47,7 @@ class train_data_augmentation():
         size: int = 32,
         gaussian_blur: bool = False,
         jitter_strength: float = 1.,
-        normalize = transforms.Normalize(mean=(0, 0, 0), std=(1, 1, 1)) # Does nothing !!
+        normalize = transforms.Normalize(mean=(0, 0, 0), std=(1, 1, 1)) # Default Normalization
     ):
         self.jitter_strength = jitter_strength
         self.size = size
@@ -78,9 +78,6 @@ class train_data_augmentation():
         # Adding Normalization
         data_transforms.append(self.normalize)
 
-        # Flattening
-        data_transforms.append(Lambda(lambda x: torch.flatten(x)))
-
         # Transformations on the training data
         self.train_transform = transforms.Compose(data_transforms)
 
@@ -101,7 +98,7 @@ class test_data_augmentation():
         self,
         size: int = 32,
         crop: bool = False,
-        normalize = transforms.Normalize(mean=(0, 0, 0), std=(1, 1, 1)) # Does nothing !!
+        normalize = transforms.Normalize(mean=(0, 0, 0), std=(1, 1, 1)) # Default Normalization
     ):
         self.size = size
         self.crop = crop
@@ -120,9 +117,6 @@ class test_data_augmentation():
 
         # Adding Normalization
         data_transforms.append(self.normalize)
-
-        # Flattening
-        data_transforms.append(Lambda(lambda x: torch.flatten(x)))
 
         # Transformations on the testing data
         self.test_transform = transforms.Compose(data_transforms)
