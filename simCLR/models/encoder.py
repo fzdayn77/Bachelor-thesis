@@ -1,7 +1,7 @@
 from .resnet import get_resnet
 from .forward_forward import FF_Net
 
-def get_encoder(name: str):
+def get_encoder(model_name: str):
     '''
     Chooses an encoder from the given models.
 
@@ -15,15 +15,15 @@ def get_encoder(name: str):
 
     # All possible encoders
     encoders = ("resnet18", "resnet34", "resnet50", "forward-forward")
-    if name not in encoders:
-        raise KeyError(f"{name} is not a valid encoder name")
+    if model_name not in encoders:
+        raise KeyError(f"{model_name} is not a valid encoder name")
       
     # ResNet18/34/50
-    if name == "resnet18" or name == "resnet34" or name == "resnet50":
-        encoder = get_resnet(name=name)
+    if model_name == "resnet18" or model_name == "resnet34" or model_name == "resnet50":
+        encoder = get_resnet(name=model_name)
     else:
         encoder = FF_Net
     
-    print(f'Encoder ====> {name}')
+    print(f'Encoder ====> {model_name}')
 
     return encoder

@@ -1,5 +1,5 @@
 import torch.nn as nn
-from models.projection_head import Projection_Head
+from simCLR.models.projection_head import Projection_Head
 
 class SimCLR(nn.Module): 
     def __init__(self, encoder: nn.Module, n_features: int, projection_head: bool=False):
