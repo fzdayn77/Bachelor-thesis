@@ -98,8 +98,36 @@ def generate_sub_batches(list):
   return sub_1, sub_2
 
 
-def train_model(model: nn.Module, num_epochs: int, train_loader: DataLoader, device=None):
 
+def compute_accuracy(model, data_loader, device):
+    """
+    Calculates the accuracy of a given data loader.
+
+    Parameters:
+        model (nn.Module): the used CNN model
+        data_loader (DataLoader): train loader or test loader
+        device: the used device
+    
+    Returns:
+        (float): the calculated accuracy
+    """
+    with torch.no_grad():
+        correct_pred, num_examples = 0, 0
+        for i, (features, targets) in enumerate(data_loader):
+
+            features = features.to(device)
+            targets = targets.float().to(device)
+
+            logits = model(features)
+            _, predicted_labels = torch.max(logits, 1)
+
+            num_examples += targets.size(0)
+            correct_pred += (predicted_labels == targets).sum()
+
+    return (correct_pred.float()/num_examples) * 100
+
+
+def train_model(model: nn.Module, num_epochs: int, train_loader: DataLoader, device=None):
   start_time = time.time()
   minibatch_loss_list, train_acc_list = [], []
   print("Begin training ...")
@@ -107,9 +135,13 @@ def train_model(model: nn.Module, num_epochs: int, train_loader: DataLoader, dev
   for epoch in range(num_epochs):
     # Putting the model in training mode
     model.train()
+
     inner_tqdm = tqdm(train_loader, desc=f"Training FF Layers | Epoch {epoch+1}/{num_epochs}", leave=True, position=0)
 
     for i, (mini_batch_imgs, _) in enumerate(inner_tqdm):
+      if device is not None:
+        mini_batch_imgs = mini_batch_imgs.to(device)
+
       avg_net_loss = model(mini_batch_imgs)
       minibatch_loss_list.append(avg_net_loss)
 
@@ -120,4 +152,39 @@ def train_model(model: nn.Module, num_epochs: int, train_loader: DataLoader, dev
   print("Training Done!\n")
 
   return minibatch_loss_list, train_acc_list
+
+
+def test_model(model: nn.Module, test_loader: DataLoader, num_epochs, loss_function, optimizer, device=None):
+  start_time = time.time()
+  test_acc_list = []
+  print("Begin testing ...")
+
+  for epoch in range(num_epochs):
+    # Putting the model in evaluation mode
+    model.eval()
+
+    inner_tqdm = tqdm(test_loader, desc=f"Testing | Epoch {epoch+1}/{num_epochs} ", leave=False, position=0)
+
+    for i, (mini_batch_imgs, _) in enumerate(inner_tqdm):
+      if device is not None:
+        mini_batch_imgs = mini_batch_imgs.to(device)
+
+      avg_net_loss = model(mini_batch_imgs)
+
+      optimizer.zero_grad()
+      avg_net_loss.backward()
+      optimizer.step()
+
+    with torch.no_grad():
+      print("Calculating accuracy ....")
+      test_acc = compute_accuracy(model, test_loader, device=device)
+      print(f"Accuracy after {epoch+1} epoch(s) ===> {test_acc:.2f} %")
+      test_acc_list.append(test_acc.item())
+
+  # Total time
+  elapsed = (time.time() - start_time) / 60
+  print(f'Total Testing Time: {elapsed:.2f} min')
+  print("Testing Done!\n")
+
+  return test_acc_list
 
