@@ -8,4 +8,5 @@ print(f'Device ===> {DEVICE}')
 BATCH_SIZE = 128
 LEARNING_RATE = 0.01
 NUM_EPOCHS = 100
+TEMPERATURE = 2.0
 

@@ -1,5 +1,5 @@
 from .resnet import get_resnet
-from .forward_forward import Unsupervised_FF
+from .forward_forward import FF_Net
 
 def get_encoder(name="forward-forward"):
     '''
@@ -19,7 +19,7 @@ def get_encoder(name="forward-forward"):
         raise KeyError(f"{name} is not a valid encoder name")
 
     # Default encoder
-    encoder = Unsupervised_FF()
+    encoder = FF_Net
       
     # ResNet18/34/50
     if name == "resnet18" or name == "resnet34" or name == "resnet50":

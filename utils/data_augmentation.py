@@ -55,10 +55,10 @@ class train_data_augmentation():
         self.normalize = normalize
 
         self.color_jitter = transforms.ColorJitter(
-            0.8 * self.jitter_strength,
-            0.8 * self.jitter_strength, 
-            0.8 * self.jitter_strength, 
-            0.2 * self.jitter_strength
+            0.8 * self.jitter_strength, # type: ignore
+            0.8 * self.jitter_strength, # type: ignore
+            0.8 * self.jitter_strength, # type: ignore
+            0.2 * self.jitter_strength # type: ignore
         )
 
         data_transforms = [

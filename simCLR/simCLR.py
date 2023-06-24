@@ -24,7 +24,7 @@ class SimCLR(nn.Module):
         h_i = self.encoder(x_i)
         h_j = self.encoder(x_j)
 
-        z_i = self.projector(h_i)
-        z_j = self.projector(h_j)
+        #z_i = self.projector(h_i)
+        #z_j = self.projector(h_j)
 
-        return h_i, h_j, z_i, z_j
+        return h_i, h_j, #z_i, z_j
