@@ -1,1 +1,1 @@
-from .simCLR import SimCLR
+from simCLR.simCLR import SimCLR
