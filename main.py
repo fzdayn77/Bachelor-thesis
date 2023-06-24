@@ -16,4 +16,4 @@ NUM_EPOCHS = 100
 TEMPERATURE = 2.0
 
 # Data preparation
-#train_loader, test_loader = get_data(dataset_name="cifar10", batch_size=BATCH_SIZE)
+train_loader, test_loader = get_data(dataset_name="cifar10", batch_size=BATCH_SIZE)
